@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="wheely_boi">
+  <xacro:property name="wheel_separation" value="0.070" />
+  <xacro:property name="wheel_radius" value="0.034" />
+  <xacro:property name="wheel_width" value="0.010" />
+  <xacro:property name="body_height" value="0.1" />
+  <xacro:property name="body_width" value="0.050" />
+  <xacro:property name="body_length" value="0.035" />
+
+  <material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+
+  <material name="red">
+    <color rgba="0.8 0 0 1"/>
+  </material>
+
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <gazebo reference="base_link">
+    <material>Gazebo/White</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+  </gazebo>
+
+  <gazebo reference="wheelR">
+    <material>Gazebo/Red</material>
+    <mu1>0.84</mu1>
+    <mu2>0.84</mu2>
+  </gazebo>
+
+  <gazebo reference="wheelL">
+    <material>Gazebo/Blue</material>
+    <mu1>0.84</mu1>
+    <mu2>0.84</mu2>
+  </gazebo>
+
+  <link name="edumip_body">
+    <visual>
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+
+    <collision>
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry> 
+    </collision>
+
+    <inertial>
+      <mass value="0.18"/>
+      <inertia ixx="6.0e-4" ixy="0" ixz="0" iyy="6.0e-4" iyz="0" izz="6.0e-4"/>
+    </inertial>
+  </link>
+
+  <link name="wheelL">
+    <visual>
+      <geometry>
+        <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+
+    <collision>
+      <geometry>
+        <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.03"/>
+      <inertia ixx="1.75e-5" ixy="0.0" ixz="0.0" iyy="1.75e-5" iyz="0.0" izz="1.75e-5"/>
+    </inertial>
+  </link>
+
+  <link name="wheelR">
+    <visual>
+      <geometry>
+        <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <collision>
+      <geometry>
+        <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.03"/>
+      <inertia ixx="1.75e-5" ixy="0.0" ixz="0.0" iyy="1.75e-5" iyz="0.0" izz="1.75e-5"/>
+    </inertial>  
+  </link>
+
+  <joint name="jointL" type="continuous">
+    <parent link="edumip_body"/>
+    <child link="wheelL"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="0 ${body_width/2 + wheel_width/2} -${body_height/2 - 0.01}" rpy="${pi/2} 0 0" /> 
+    <dynamics friction="0.1"/>
+  </joint>
+
+  <joint name="jointR" type="continuous">
+    <parent link="edumip_body"/>
+    <child link="wheelR"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="0 -${body_width/2 + wheel_width/2} -${body_height/2 - 0.01}" rpy="${pi/2} 0 0" />
+    <dynamics friction="0.1"/>
+  </joint>
+
+  <transmission name="motorL">
+    <type>transmission_interfaxe/SimpleTransmission</type>
+    <actuator name="$l_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="jointL">
+    </joint>
+  </transmission>
+
+  <transmission name="motorR">
+    <type>transmission_interfaxe/SimpleTransmission</type>
+    <actuator name="$r_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="jointR">
+    </joint>
+  </transmission>
+
+  <gazebo>
+    <plugin name="wb_plugin" filename="libwb_plugin.so"> </plugin>
+  </gazebo>
+</robot>
