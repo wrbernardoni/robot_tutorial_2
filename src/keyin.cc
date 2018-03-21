@@ -11,6 +11,9 @@
 #define MAG_THRESH(a, b) (MAG(a) > b ? b * SIGN(a) : a)
 #define PI 3.14
 
+/*
+ Function taken from: https://answers.ros.org/question/63491/keyboard-key-pressed/?answer=218817#post-id-218817
+*/
 char getch()
 {
 	fd_set set;
