@@ -113,24 +113,6 @@
     <dynamics friction="0.1"/>
   </joint>
 
-  <transmission name="motorL">
-    <type>transmission_interfaxe/SimpleTransmission</type>
-    <actuator name="$l_motor">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-    <joint name="jointL">
-    </joint>
-  </transmission>
-
-  <transmission name="motorR">
-    <type>transmission_interfaxe/SimpleTransmission</type>
-    <actuator name="$r_motor">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-    <joint name="jointR">
-    </joint>
-  </transmission>
-
   <gazebo>
     <plugin name="wb_plugin" filename="libwb_plugin.so"> </plugin>
   </gazebo>
