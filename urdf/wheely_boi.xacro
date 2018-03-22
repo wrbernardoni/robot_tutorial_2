@@ -7,19 +7,7 @@
   <xacro:property name="body_width" value="0.050" />
   <xacro:property name="body_length" value="0.035" />
 
-  <material name="blue">
-    <color rgba="0 0 0.8 1"/>
-  </material>
-
-  <material name="red">
-    <color rgba="0.8 0 0 1"/>
-  </material>
-
-  <material name="white">
-    <color rgba="1 1 1 1"/>
-  </material>
-
-  <gazebo reference="base_link">
+  <gazebo reference="edumip_body">
     <material>Gazebo/White</material>
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
@@ -42,7 +30,6 @@
       <geometry>
         <box size="${body_length} ${body_width} ${body_height}"/>
       </geometry>
-      <material name="white"/>
     </visual>
 
     <collision>
@@ -62,7 +49,6 @@
       <geometry>
         <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
       </geometry>
-      <material name="blue"/>
     </visual>
 
     <collision>
@@ -82,7 +68,6 @@
       <geometry>
         <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
       </geometry>
-      <material name="red"/>
     </visual>
 
     <collision>
