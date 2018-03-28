@@ -1,2 +1,4 @@
 *.urdf
+rover.xacro
+*.swp
 
