@@ -98,5 +98,9 @@
     <dynamics friction="0.1"/>
   </joint>
 
+
+  <gazebo>
+    <plugin name="rover_plugin" filename="librover_plugin.so"> </plugin>
+  </gazebo>
 </robot>
 
