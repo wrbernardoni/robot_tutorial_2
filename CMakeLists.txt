@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robot_tutorial_1)
+project(robot_tutorial_2)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -41,12 +41,7 @@ include_directories(
 )
 
 # Compile plugin
-add_library(wb_plugin plugins/wb_plugin.cc)
-target_link_libraries(wb_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${roscpp_LIBRARIES})
-
-# Compile keyin
-add_executable(keyin src/keyin.cc)
-target_link_libraries(keyin ${catkin_LIBRARIES})
-add_dependencies(keyin ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#add_library(wb_plugin plugins/wb_plugin.cc)
+#target_link_libraries(wb_plugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${roscpp_LIBRARIES})
 
 
