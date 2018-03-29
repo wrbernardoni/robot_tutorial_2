@@ -18,9 +18,20 @@ namespace gazebo
   class RoverPlugin : public ModelPlugin
   {
     private:
+    // Model pointer
+    physics::ModelPtr _m;
+
+    // Pointer to our onUpdate callback
+    event::ConnectionPtr updateConnection;
 
     public:
     RoverPlugin() {}
+
+    // Runs each nanosecond tick
+    void onUpdate(const common::UpdateInfo &inf)
+    {
+       _m->GetJoint("jFL")->SetForce(0, 5);
+    }
 
     // Runs when the model is loaded
     virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
@@ -31,6 +42,11 @@ namespace gazebo
          return;
        }
        ROS_INFO("Rover Plugin Loaded");
+
+       _m = _model;
+
+       // Bind our onUpdate function to the update callback
+       this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&RoverPlugin::onUpdate, this, _1));
     }
   };
 

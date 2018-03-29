@@ -26,7 +26,7 @@
     </collision>
 
     <inertial>
-      <mass value="5"/>
+      <mass value="15"/>
       <inertia ixx="${(5/12) * (body_width * body_width + body_height* body_height)}" ixy="0" ixz="0" iyy="${(5/12) * (body_length * body_length + body_height * body_height)}" iyz="0" izz="${(5/12) * (body_width * body_width + body_length * body_length)}" />
     </inertial>
   </link>
@@ -58,44 +58,44 @@
     </link>
   </xacro:macro>
 
-  <xacro:wheel_link name="wFL" radius="${wheel_radius}" width="${wheel_width}" mass="0.3"/>
+  <xacro:wheel_link name="wFL" radius="${wheel_radius}" width="${wheel_width}" mass="2"/>
 
   <joint name="jFL" type="continuous">
     <parent link="body"/>
     <child link="wFL"/>
     <axis xyz="0 0 1"/>
     <origin xyz="${body_length/2 - 0.03} ${body_width/2 + wheel_width/2} 0" rpy="${pi/2} 0 0" />
-    <dynamics friction="0.1"/>
+    <dynamics friction="0.5"/>
   </joint>
 
-  <xacro:wheel_link name="wBL" radius="${wheel_radius}" width="${wheel_width}" mass="0.3"/>
+  <xacro:wheel_link name="wBL" radius="${wheel_radius}" width="${wheel_width}" mass="2"/>
 
   <joint name="jBL" type="continuous">
     <parent link="body"/>
     <child link="wBL"/>
     <axis xyz="0 0 1"/>
     <origin xyz="-${body_length/2 - 0.03} ${body_width/2 + wheel_width/2} 0" rpy="${pi/2} 0 0" />
-    <dynamics friction="0.1"/>
+    <dynamics friction="0.5"/>
   </joint>
 
-  <xacro:wheel_link name="wFR" radius="${wheel_radius}" width="${wheel_width}" mass="0.3"/>
+  <xacro:wheel_link name="wFR" radius="${wheel_radius}" width="${wheel_width}" mass="2"/>
 
   <joint name="jFR" type="continuous">
     <parent link="body"/>
     <child link="wFR"/>
     <axis xyz="0 0 1"/>
     <origin xyz="${body_length/2 - 0.03} -${body_width/2 + wheel_width/2} 0" rpy="${pi/2} 0 0" />
-    <dynamics friction="0.1"/>
+    <dynamics friction="0.5"/>
   </joint>
 
-  <xacro:wheel_link name="wBR" radius="${wheel_radius}" width="${wheel_width}" mass="0.3"/>
+  <xacro:wheel_link name="wBR" radius="${wheel_radius}" width="${wheel_width}" mass="2"/>
 
   <joint name="jBR" type="continuous">
     <parent link="body"/>
     <child link="wBR"/>
     <axis xyz="0 0 1"/>
     <origin xyz="-${body_length/2 - 0.03} -${body_width/2 + wheel_width/2} 0" rpy="${pi/2} 0 0" />
-    <dynamics friction="0.1"/>
+    <dynamics friction="0.5"/>
   </joint>
 
 
