@@ -11,6 +11,10 @@
 // Include std::string's because they're pretty darn useful.
 #include <string>
 
+#include <cmath>
+
+#define PI 3.14159265
+
 // So we don't have to do gazebo::everything
 namespace gazebo
 {
@@ -24,13 +28,43 @@ namespace gazebo
     // Pointer to our onUpdate callback
     event::ConnectionPtr updateConnection;
 
+    double zeroToTwoPi(double angle)
+    {
+       double out = std::fmod(angle, 2.0 * PI);
+       if (out < 0)
+         out = 2.0 * PI + out;
+
+       return out;
+    }
+
+    double minAngleAdjust(double a1, double a2)
+    {
+      return std::atan2(std::sin(a2 - a1), std::cos(a2 - a1));
+    }
+
     public:
     RoverPlugin() {}
 
     // Runs each nanosecond tick
     void onUpdate(const common::UpdateInfo &inf)
     {
-       _m->GetJoint("jFL")->SetForce(0, 5);
+       double angleSetpoint = PI / 3.0;
+       double lAngle = zeroToTwoPi(_m->GetJoint("lDifJoint")->GetAngle(0).Radian());
+       double rAngle = zeroToTwoPi(_m->GetJoint("rDifJoint")->GetAngle(0).Radian());
+
+       double lDif = minAngleAdjust(lAngle, angleSetpoint);
+       double rDif = minAngleAdjust(rAngle, angleSetpoint);
+       
+ 
+       double lAd = (lDif)/(PI);
+       double rAd = (rDif)/(PI);
+       _m->GetJoint("lDifJoint")->SetForce(0, lAd);
+       _m->GetJoint("rDifJoint")->SetForce(0, rAd);
+
+       ROS_INFO("R: %f | L: %f", rDif, lDif);
+
+       _m->GetJoint("jFL")->SetForce(0, -1);
+       _m->GetJoint("jFR")->SetForce(0, -1); 
     }
 
     // Runs when the model is loaded

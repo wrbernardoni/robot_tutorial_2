@@ -5,12 +5,15 @@
   <xacro:property name="body_height" value="0.05" />
   <xacro:property name="body_width" value="0.15" />
   <xacro:property name="body_length" value="0.4" />
+  <xacro:property name="leg_height" value="0.05" />
+  <xacro:property name="leg_width" value="0.02" />
+  <xacro:property name="leg_length" value="0.02" />
 
   <gazebo reference="body">
     <material>Gazebo/White</material>
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
-  </gazebo>
+ </gazebo>
 
   <link name="body">
     <visual>
@@ -26,17 +29,71 @@
     </collision>
 
     <inertial>
-      <mass value="15"/>
+      <mass value="5"/>
       <inertia ixx="${(5/12) * (body_width * body_width + body_height* body_height)}" ixy="0" ixz="0" iyy="${(5/12) * (body_length * body_length + body_height * body_height)}" iyz="0" izz="${(5/12) * (body_width * body_width + body_length * body_length)}" />
     </inertial>
   </link>
+
+  <link name="lLeg">
+    <visual>
+      <geometry>
+        <box size="${leg_length} ${leg_width} ${leg_height}"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <geometry>
+        <box size="${leg_length} ${leg_width} ${leg_height}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="${(1/12) * (leg_width * leg_width + leg_height* leg_height)}" ixy="0" ixz="0" iyy="${(1/12) * (leg_length * leg_length + leg_height * leg_height)}" iyz="0" izz="${(1/12) * (leg_width * leg_width + leg_length * leg_length)}" />
+    </inertial>
+  </link>
+
+  <joint name="lDifJoint" type="continuous">
+    <parent link="body"/>
+    <child link="lLeg"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="${body_length/2 - 0.03} ${body_width/2 + wheel_width/2} -${body_height/2}"/>
+  </joint>
+
+  <link name="rLeg">
+    <visual>
+      <geometry>
+        <box size="${leg_length} ${leg_width} ${leg_height}"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <geometry>
+        <box size="${leg_length} ${leg_width} ${leg_height}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="${(1/12) * (leg_width * leg_width + leg_height* leg_height)}" ixy="0" ixz="0" iyy="${(1/12) * (leg_length * leg_length + leg_height * leg_height)}" iyz="0" izz="${(1/12) * (leg_width * leg_width + leg_length * leg_length)}" />
+    </inertial>
+  </link>
+
+  <joint name="rDifJoint" type="continuous">
+    <parent link="body"/>
+    <child link="rLeg"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="${body_length/2 - 0.03} -${body_width/2 + wheel_width/2} -${body_height/2}"/>
+  </joint>
+
+
 
   <xacro:macro name="wheel_link" params="name radius width mass">
     <gazebo reference="${name}">
       <material>Gazebo/Grey</material>
       <mu1>0.84</mu1>
       <mu2>0.84</mu2>
-    </gazebo>
+   </gazebo>
 
     <link name="${name}">
       <visual>
@@ -61,10 +118,10 @@
   <xacro:wheel_link name="wFL" radius="${wheel_radius}" width="${wheel_width}" mass="2"/>
 
   <joint name="jFL" type="continuous">
-    <parent link="body"/>
+    <parent link="lLeg"/>
     <child link="wFL"/>
     <axis xyz="0 0 1"/>
-    <origin xyz="${body_length/2 - 0.03} ${body_width/2 + wheel_width/2} 0" rpy="${pi/2} 0 0" />
+    <origin xyz="0 ${leg_width/2} ${leg_length/2}" rpy="${pi/2} 0 0" />
     <dynamics friction="0.5"/>
   </joint>
 
@@ -81,10 +138,10 @@
   <xacro:wheel_link name="wFR" radius="${wheel_radius}" width="${wheel_width}" mass="2"/>
 
   <joint name="jFR" type="continuous">
-    <parent link="body"/>
+    <parent link="rLeg"/>
     <child link="wFR"/>
     <axis xyz="0 0 1"/>
-    <origin xyz="${body_length/2 - 0.03} -${body_width/2 + wheel_width/2} 0" rpy="${pi/2} 0 0" />
+    <origin xyz="0 -${leg_width/2} ${leg_length/2}" rpy="${pi/2} 0 0" />
     <dynamics friction="0.5"/>
   </joint>
 
