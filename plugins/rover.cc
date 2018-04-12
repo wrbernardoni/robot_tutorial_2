@@ -8,6 +8,8 @@
 // Include ROS headers so we can communicate with our robot
 #include <ros/ros.h>
 
+#include "geometry_msgs/Twist.h"
+
 // Include std::string's because they're pretty darn useful.
 #include <string>
 
@@ -46,13 +48,25 @@ namespace gazebo
 
     double pLA, pRA;
 
+    std::unique_ptr<ros::NodeHandle> node;
+    ros::Subscriber *sub;
+
+    double lc_V;
+    double lc_Y;
+
     public:
     RoverPlugin() {}
+
+    void onCmd(geometry_msgs::Twist t)
+    {
+       lc_V = t.linear.x;
+       lc_Y = t.angular.z;
+    }
 
     // Runs each nanosecond tick
     void onUpdate(const common::UpdateInfo &inf)
     {
-       double angleSetpoint = PI / 3.0;
+       double angleSetpoint = lc_Y * PI / 2.5;
        double lAngle = zeroToTwoPi(_m->GetJoint("lDifJoint")->GetAngle(0).Radian());
        double rAngle = zeroToTwoPi(_m->GetJoint("rDifJoint")->GetAngle(0).Radian());
 
@@ -72,8 +86,8 @@ namespace gazebo
 
        ROS_INFO("R: %f | L: %f", rAd, lAd);
 
-       _m->GetJoint("jFL")->SetForce(0, -1);
-       _m->GetJoint("jFR")->SetForce(0, -1); 
+       _m->GetJoint("jFL")->SetForce(0, -lc_V);
+       _m->GetJoint("jFR")->SetForce(0, -lc_V); 
 
        pLA = lAngle;
        pRA = rAngle;
@@ -92,6 +106,13 @@ namespace gazebo
        _m = _model;
 
        pLA = pRA = 0;
+       lc_V = lc_Y = 0;
+
+       std::string name = _m->GetName();
+       node.reset(new ros::NodeHandle(name.c_str()));
+       sub = new ros::Subscriber();
+       std::string subName = name + "/cmd";
+       *sub = node->subscribe(subName, 1, &RoverPlugin::onCmd, this);
 
        // Bind our onUpdate function to the update callback
        this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&RoverPlugin::onUpdate, this, _1));
