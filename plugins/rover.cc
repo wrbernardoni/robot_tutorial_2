@@ -15,6 +15,8 @@
 
 #define PI 3.14159265
 
+#define SGN(a) (a >= 0 ? 1.0 : -1.0)
+
 // So we don't have to do gazebo::everything
 namespace gazebo
 {
@@ -42,6 +44,8 @@ namespace gazebo
       return std::atan2(std::sin(a2 - a1), std::cos(a2 - a1));
     }
 
+    double pLA, pRA;
+
     public:
     RoverPlugin() {}
 
@@ -52,19 +56,27 @@ namespace gazebo
        double lAngle = zeroToTwoPi(_m->GetJoint("lDifJoint")->GetAngle(0).Radian());
        double rAngle = zeroToTwoPi(_m->GetJoint("rDifJoint")->GetAngle(0).Radian());
 
+       double lAV = minAngleAdjust(pLA, lAngle);
+       double rAV = minAngleAdjust(pRA, rAngle);
+
        double lDif = minAngleAdjust(lAngle, angleSetpoint);
        double rDif = minAngleAdjust(rAngle, angleSetpoint);
-       
+
+       lDif = (lDif * SGN(lDif) < PI / 8.0 ? 0 : lDif);
+       rDif = (rDif * SGN(rDif) < PI / 8.0 ? 0 : rDif);
  
-       double lAd = (lDif)/(PI);
-       double rAd = (rDif)/(PI);
+       double lAd = (lDif)/(2.0 * PI);
+       double rAd = (rDif)/(2.0 * PI);
        _m->GetJoint("lDifJoint")->SetForce(0, lAd);
        _m->GetJoint("rDifJoint")->SetForce(0, rAd);
 
-       ROS_INFO("R: %f | L: %f", rDif, lDif);
+       ROS_INFO("R: %f | L: %f", rAd, lAd);
 
        _m->GetJoint("jFL")->SetForce(0, -1);
        _m->GetJoint("jFR")->SetForce(0, -1); 
+
+       pLA = lAngle;
+       pRA = rAngle;
     }
 
     // Runs when the model is loaded
@@ -78,6 +90,8 @@ namespace gazebo
        ROS_INFO("Rover Plugin Loaded");
 
        _m = _model;
+
+       pLA = pRA = 0;
 
        // Bind our onUpdate function to the update callback
        this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&RoverPlugin::onUpdate, this, _1));
