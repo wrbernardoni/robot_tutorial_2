@@ -65,8 +65,8 @@ namespace gazebo
        lDif = (lDif * SGN(lDif) < PI / 8.0 ? 0 : lDif);
        rDif = (rDif * SGN(rDif) < PI / 8.0 ? 0 : rDif);
  
-       double lAd = (lDif)/(2.0 * PI);
-       double rAd = (rDif)/(2.0 * PI);
+       double lAd = (lDif)/(PI);
+       double rAd = (rDif)/(PI);
        _m->GetJoint("lDifJoint")->SetForce(0, lAd);
        _m->GetJoint("rDifJoint")->SetForce(0, rAd);
 
