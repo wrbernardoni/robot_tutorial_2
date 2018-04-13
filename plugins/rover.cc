@@ -47,6 +47,7 @@ namespace gazebo
     }
 
     double pLA, pRA;
+    math::Vector3 pPos;
 
     std::unique_ptr<ros::NodeHandle> node;
     ros::Subscriber *sub;
@@ -76,21 +77,24 @@ namespace gazebo
        double lDif = minAngleAdjust(lAngle, angleSetpoint);
        double rDif = minAngleAdjust(rAngle, angleSetpoint);
 
-       lDif = (lDif * SGN(lDif) < PI / 8.0 ? 0 : lDif);
-       rDif = (rDif * SGN(rDif) < PI / 8.0 ? 0 : rDif);
- 
-       double lAd = (lDif)/(PI);
-       double rAd = (rDif)/(PI);
+       double lAd = (((lDif)/(PI)) * (PI / 5.0) - lAV);
+       double rAd = (((rDif)/(PI)) * (PI / 5.0) - rAV);
        _m->GetJoint("lDifJoint")->SetForce(0, lAd);
        _m->GetJoint("rDifJoint")->SetForce(0, rAd);
 
-       ROS_INFO("R: %f | L: %f", rAd, lAd);
+       math::Vector3 pos = _m->GetWorldPose().pos;
+       math::Quaternion rot = _m->GetWorldPose().rot;
+       math::Vector3 dist = pos - pPos;
+       double vel = SGN(dist.x * cos(rot.GetYaw()) + dist.y * sin(rot.GetYaw())) * sqrt(dist.x * dist.x + dist.y * dist.y);
 
-       _m->GetJoint("jFL")->SetForce(0, -lc_V);
-       _m->GetJoint("jFR")->SetForce(0, -lc_V); 
+       _m->GetJoint("jFL")->SetForce(0, -(lc_V - vel));
+       _m->GetJoint("jFR")->SetForce(0, -(lc_V - vel));
+
+       ROS_INFO("V: %f | R: %f | L: %f", vel, rAd, lAd);
 
        pLA = lAngle;
        pRA = rAngle;
+       pPos = pos;
     }
 
     // Runs when the model is loaded
