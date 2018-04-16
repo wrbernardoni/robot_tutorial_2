@@ -19,6 +19,12 @@
 
 #define SGN(a) (a >= 0 ? 1.0 : -1.0)
 
+#define MAX_DIF_V 0.02
+#define DIF_MAX_EFFORT 5
+
+#define MAX_LIN_V 0.0015
+#define LIN_MAX_EFFORT 5
+
 // So we don't have to do gazebo::everything
 namespace gazebo
 {
@@ -77,8 +83,8 @@ namespace gazebo
        double lDif = minAngleAdjust(lAngle, angleSetpoint);
        double rDif = minAngleAdjust(rAngle, angleSetpoint);
 
-       double lAd = (((lDif)/(PI)) * (PI / 5.0) - lAV);
-       double rAd = (((rDif)/(PI)) * (PI / 5.0) - rAV);
+       double lAd = (((lDif/PI) * MAX_DIF_V - lAV)/MAX_DIF_V) * DIF_MAX_EFFORT;
+       double rAd = (((rDif/PI) * MAX_DIF_V - rAV)/MAX_DIF_V) * DIF_MAX_EFFORT;
        _m->GetJoint("lDifJoint")->SetForce(0, lAd);
        _m->GetJoint("rDifJoint")->SetForce(0, rAd);
 
@@ -87,8 +93,10 @@ namespace gazebo
        math::Vector3 dist = pos - pPos;
        double vel = SGN(dist.x * cos(rot.GetYaw()) + dist.y * sin(rot.GetYaw())) * sqrt(dist.x * dist.x + dist.y * dist.y);
 
-       _m->GetJoint("jFL")->SetForce(0, -(lc_V - vel));
-       _m->GetJoint("jFR")->SetForce(0, -(lc_V - vel));
+       double desLinV = lc_V * MAX_LIN_V;
+
+       _m->GetJoint("jFL")->SetForce(0, -1.0 * LIN_MAX_EFFORT * (desLinV - vel)/MAX_LIN_V);
+       _m->GetJoint("jFR")->SetForce(0, -1.0 * LIN_MAX_EFFORT * (desLinV - vel)/MAX_LIN_V);
 
        ROS_INFO("V: %f | R: %f | L: %f", vel, rAd, lAd);
 
